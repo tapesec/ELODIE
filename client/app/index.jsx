@@ -4,7 +4,7 @@ require('expose?$!expose?jQuery!jquery');
 
 import React from 'react';
 import {render} from 'react-dom';
-import Table from './tableInvoices.jsx';
+import Table from './components/TableInvoices.react.jsx';
 
 class Container extends React.Component {
 	

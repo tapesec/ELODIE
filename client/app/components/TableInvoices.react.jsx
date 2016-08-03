@@ -2,7 +2,7 @@
 
 import React from 'react';
 import request from 'superagent';
-import InvoicesLine from './invoicesLine.jsx';
+import InvoicesLine from './invoicesLine.react.jsx';
 import invoicesStore from './../stores/InvoicesStore.js';
 
 
