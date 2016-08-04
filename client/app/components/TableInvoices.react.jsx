@@ -2,7 +2,8 @@
 
 import React from 'react';
 import request from 'superagent';
-import InvoicesLine from './invoicesLine.react.jsx';
+import InvoicesInlineForm from './InvoicesInlineForm.react.jsx';
+import InvoicesLine from './InvoicesLine.react.jsx';
 import invoicesStore from './../stores/InvoicesStore.js';
 import InvoicesActions from './../actions/InvoicesActions.js';
 
@@ -28,14 +29,15 @@ export default class Table extends React.Component {
 
 	componentDidMount () {
 		InvoicesActions.fetchFromServer();
-		invoicesStore.addChangeListener(this._onChange.call(this));
+		invoicesStore.addChangeListener(this._onChange.bind(this));
   	}
 
   	componentWillUnmount () {
-    	invoicesStore.removeChangeListener(this._onChange.call(this));
+    	invoicesStore.removeChangeListener(this._onChange.bind(this));
   	}
 
   	_onChange() {
+
   		getInvoicesState().then((data) => {
   			this.setState(data);
   		});
@@ -43,7 +45,7 @@ export default class Table extends React.Component {
 
 	render () {
 
-		var rows = [];
+		var rows = [<InvoicesInlineForm key={new Date().getTime()}/>];
 		for (let key in this.state.allInvoices) {
 			rows.push(<InvoicesLine key={key} data={this.state.allInvoices[key]} />);
 		}

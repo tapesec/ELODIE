@@ -11,7 +11,7 @@ class Container extends React.Component {
 	render() {
 		return (
 			<div className="container">
-				<div className="col-lg-8 col-lg-offset-2">
+				<div className="col-lg-10 col-lg-offset-1">
 					<h1>ELODIE</h1>
 					<Table ressource="/invoices" />
 				</div>
