@@ -4,48 +4,41 @@ import React from 'react';
 import request from 'superagent';
 import InvoicesLine from './invoicesLine.react.jsx';
 import invoicesStore from './../stores/InvoicesStore.js';
+import InvoicesActions from './../actions/InvoicesActions.js';
 
 
 function getInvoicesState() {
-	/*return new Promise(function(resolve, reject) {
-		InvoicesStore.getAll().then(function(data) {
+	return new Promise((resolve, reject) => {
+		invoicesStore.getAll().then((data) => {
 			resolve({ allInvoices: data });
-		}, function(err) {
+		}, (err) => {
 			reject(err);
 		});
-	});*/
-	return {
-		allInvoices: invoicesStore.getAll()
-	}
+	});
 }
 
 export default class Table extends React.Component {
 	
-	/*constructor() {
-    	super();
-  	}*/
-
   	constructor() {
   		super();
-  		//getInvoicesState().then(function(data) {
-  		this.state = getInvoicesState();
-  		//});
+  		this.state = {
+  			allInvoices: {}
+  		};
   	}
 
 	componentDidMount () {
-		invoicesStore.addChangeListener(this._onChange);
+		InvoicesActions.fetchFromServer();
+		invoicesStore.addChangeListener(this._onChange.call(this));
   	}
 
   	componentWillUnmount () {
-    	invoicesStore.removeChangeListener(this._onChange);
+    	invoicesStore.removeChangeListener(this._onChange.call(this));
   	}
 
   	_onChange() {
-  		/*getInvoicesState().then(function(data) {
+  		getInvoicesState().then((data) => {
   			this.setState(data);
-  		});*/
-		this.setState(getInvoicesState());
-  		
+  		});
   	}
 
 	render () {

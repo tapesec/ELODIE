@@ -2,7 +2,7 @@
 
 import AppDispatcher from './../dispatcher/AppDispatcher.js';
 import AppConstants from './../constants/InvoicesConstants.js';
-import InvoicesDao from './../InvoicesDao.js';
+import InvoicesDao from './../dao/InvoicesDao.js';
 import { EventEmitter } from 'events';
 
 var CHANGE_EVENT = 'change';
@@ -13,48 +13,24 @@ class InvoicesStore extends EventEmitter {
 
 	constructor() {
 		super();
-		this._invoices = 
-			{	
-				["1a2b"]: {
-					id: new Date().getTime(),
-					date: new Date(),
-					patient_name: "DUPOUY",
-					patient_share: 11.12,
-					SECU_share: 102.43,
-					paid: false
-				},
-				["3d4e"]: {
-					id: new Date().getTime(),
-					date: new Date(),
-					patient_name: "MARTIN",
-					patient_share: 14.12,
-					SECU_share: 402.43,
-					paid: false	
-				}
-				
-			};
+		this._invoices = {};
 	}
 
 	getAll() {
+		
+		return new Promise((resolve, reject) => {
 
-		return this._invoices;
-		/*if (!this._cache) {
-			return new Promise(function(resolve, reject) {
-				InvoicesDao.getAll()
-				.then(function(data) {
-					this._cache = data;
-					resolve(that._cache);
-				}.bind(this), function(err) {
-					reject(err);		
+			InvoicesDao.getAll()
+			.then((data) => {
+				data.forEach((invoice) => {
+					this._invoices[invoice._id] = invoice;
 				});
+				resolve(this._invoices);
+			}, (err) => {
+				reject(err);		
 			});
-			
 
-		} else {
-			return new Promise(function(resolve, reject) {
-				resolve(this._cache);
-			});
-		}*/
+		});
 	}
 
 	emitChange() {
@@ -74,12 +50,13 @@ class InvoicesStore extends EventEmitter {
 var invoicesStore = new InvoicesStore();
 
 AppDispatcher.register(function(payload) {
-	var action = payload.action;
-	switch(action.actionType) {
+	
+	switch(payload.actionType) {
 		
 		case AppConstants.FETCH_INVOICES_FROM_SERVER:
-			invoicesStore.getAll();
-			invoicesStore.emitChange();
+			invoicesStore.getAll().then((data) => {
+				invoicesStore.emitChange();
+			});
 		break;
 		default:
 	}
