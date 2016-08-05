@@ -33,6 +33,19 @@ class InvoicesStore extends EventEmitter {
 		});
 	}
 
+	save(data) {
+		
+		return new Promise((resolve, reject) => {
+			InvoicesDao.save(data)
+			.then((statusCode) => {
+				resolve(statusCode);
+			}, (err) => {
+				// do something in case of error
+				reject(err);
+			});
+		});
+	}
+
 	emitChange() {
 		this.emit(CHANGE_EVENT);
 	}
@@ -58,6 +71,15 @@ AppDispatcher.register(function(payload) {
 				invoicesStore.emitChange();
 			});
 		break;
+		case AppConstants.PERSIST_INVOICE:
+			invoicesStore.save(payload.data).then((response) => {
+				invoicesStore.emitChange();
+			}, function(err) {
+				//emit something about error
+			});
+		break;
+
+						
 		default:
 	}
 

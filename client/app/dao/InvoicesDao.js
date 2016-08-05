@@ -14,4 +14,17 @@ export default class InvoicesDao {
 		});
 		
 	}
+
+	static save(data) {
+
+		return new Promise((resolve, reject) => {
+			request
+			.post("/invoice")
+			.send(data)
+			.end((err, res) => {
+				if (err) return reject(err);
+				resolve(res.statusCode);
+			});
+		});
+	}
 };

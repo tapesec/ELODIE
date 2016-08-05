@@ -8,4 +8,11 @@ export default class InvoicesActions {
 			actionType: InvoicesConstants.FETCH_INVOICES_FROM_SERVER
 		});
 	}
+
+	static addInvoice(data) {
+		AppDispatcher.dispatch({
+			actionType: InvoicesConstants.PERSIST_INVOICE,
+			data: data
+		});
+	}
 };
