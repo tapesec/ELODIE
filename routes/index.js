@@ -19,4 +19,12 @@ router.post('/invoice', function(req, res, next) {
   ListController.saveInvoice(req, res, next);
 });
 
+router.patch('/invoice/:id', function(req, res, next) {
+  ListController.updateInvoice(req, res, next);
+});
+
+router.delete('/invoice/:id', function(req, res, next) {
+  ListController.removeInvoice(req, res, next);
+});
+
 module.exports = router;

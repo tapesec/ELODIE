@@ -2,11 +2,13 @@ import request from 'superagent';
 
 export default class InvoicesDao {
 
-	static getAll() {
+	static getAll(dateParams) {
 		return new Promise((resolve, reject) => {
 			request
 			.get("/invoices")
+			.query(dateParams)
 			.end((err, res) => {
+				console.log(res.body, 'res body');
 				if (err) return reject(err);
 				resolve(res.body);
 			});
@@ -18,6 +20,7 @@ export default class InvoicesDao {
 	static save(data) {
 
 		return new Promise((resolve, reject) => {
+			
 			request
 			.post("/invoice")
 			.send(data)
@@ -25,6 +28,34 @@ export default class InvoicesDao {
 				if (err) return reject(err);
 				resolve(res.statusCode);
 			});
+
 		});
+	}
+
+	static update(data) {
+		console.log(data, 'data');
+
+		return new Promise((resolve, reject) => {
+			request
+			.patch("/invoice/"+data.id)
+			.send(data.patch_describer)
+			.end((err, res) => {
+				if (err) return reject(err);
+				resolve(res.statusCode);
+			});
+		});	
+	}
+
+	static remove(data) {
+		console.log(data, 'data');
+
+		return new Promise((resolve, reject) => {
+			request
+			.delete("/invoice/"+data.id)
+			.end((err, res) => {
+				if (err) return reject(err);
+				resolve(res.statusCode);
+			});
+		});	
 	}
 };

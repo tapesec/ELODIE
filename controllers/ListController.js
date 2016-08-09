@@ -8,17 +8,21 @@ class ListController {
 	* @description retourne la liste des factures
 	*/
 	static getInvoices(req, res, next) {
-
+		console.log(req.query, 'req query');
 		Invoices
-		.getAll()
+		.getAll(req.query)
 		.then(function(data) {
 			ListController.sendHttp(res, data);
+		})
+		.catch(function(err) {
+			console.log(err);
+			ListController.sendHttp(res, err, 500);	
 		});
 
 	}
 
 	static saveInvoice(req, res, next) {
-		console.log(req.body, 'req');
+
 		Invoices
 		.create(req.body)
 		.then(function() {
@@ -27,11 +31,23 @@ class ListController {
 	}
 
 	static updateInvoice(req, res, next) {
+
 		Invoices
-		.setOne(req.body)
+		.setOne(req.params.id, req.body)
 		.then(function() {
-			ListController.sendHttp(res, null, 201);
-		});
+			ListController.sendHttp(res, null, 200);
+		})
+		.catch(next);
+	}
+
+	static removeInvoice(req, res, next) {
+
+		Invoices
+		.remove(req.params.id)
+		.then(function() {
+			ListController.sendHttp(res, null, 200);
+		})
+		.catch(next);
 	}
 
 	static sendHttp(res, data, code=200) {

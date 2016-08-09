@@ -5,8 +5,9 @@ import AppConstants from './../constants/InvoicesConstants.js';
 import InvoicesDao from './../dao/InvoicesDao.js';
 import { EventEmitter } from 'events';
 
-var CHANGE_EVENT = 'change';
-//var _invoices = {};
+const CHANGE_EVENT = 'change'
+,	  TOGGLE_EDIT_LINE = 'toggle_edit'
+,	  MONTH_SELECTOR_NOTIFIED = "month_notified";
 
 
 class InvoicesStore extends EventEmitter {
@@ -16,11 +17,11 @@ class InvoicesStore extends EventEmitter {
 		this._invoices = {};
 	}
 
-	getAll() {
+	getAll(dateParams) {
 		
 		return new Promise((resolve, reject) => {
-
-			InvoicesDao.getAll()
+			this._invoices = {};
+			InvoicesDao.getAll(dateParams)
 			.then((data) => {
 				data.forEach((invoice) => {
 					this._invoices[invoice._id] = invoice;
@@ -34,9 +35,51 @@ class InvoicesStore extends EventEmitter {
 	}
 
 	save(data) {
-		
+
 		return new Promise((resolve, reject) => {
-			InvoicesDao.save(data)
+			if (data._id) {
+				let patch_describer = [
+					{ op: 'replace', path: '/date', value: data.date },
+					{ op: 'replace', path: '/patient_name', value: data.patient_name },
+					{ op: 'replace', path: '/patient_share/value', value: data.patient_share.value },
+					{ op: 'replace', path: '/SECU_share/value', value: data.SECU_share.value }
+				];
+
+				InvoicesDao.update({ id: data._id, patch_describer: patch_describer })
+				.then((statusCode) => {
+					resolve(statusCode);
+				}, (err) => {
+					// do something in case of error
+					reject(err);
+				});
+
+			} else {
+				InvoicesDao.save(data)
+				.then((statusCode) => {
+					resolve(statusCode);
+				}, (err) => {
+					// do something in case of error
+					reject(err);
+				});
+			}
+		});
+	}
+
+	togglePayment(data) {
+		return new Promise((resolve, reject) => {
+			InvoicesDao.update(data)
+			.then((statusCode) => {
+				resolve(statusCode);
+			}, (err) => {
+				// do something in case of error
+				reject(err);
+			});
+		});	
+	}
+
+	removeLine(data) {
+		return new Promise((resolve, reject) => {
+			InvoicesDao.remove(data)
 			.then((statusCode) => {
 				resolve(statusCode);
 			}, (err) => {
@@ -46,12 +89,29 @@ class InvoicesStore extends EventEmitter {
 		});
 	}
 
-	emitChange() {
-		this.emit(CHANGE_EVENT);
+	toggleEditLine(data) {
+		this.emit(TOGGLE_EDIT_LINE, data);
+	}
+
+	emitChange(param) {
+		console.log("emit change with param "+param);
+		this.emit(CHANGE_EVENT, param);
+	}
+
+	notifyMonthSelector() {
+		this.emit(MONTH_SELECTOR_NOTIFIED);
 	}
 
 	addChangeListener(callback) {
 		this.on(CHANGE_EVENT, callback);
+	}
+
+	addToggleEditModListener(callback) {
+		this.on(TOGGLE_EDIT_LINE, callback);
+	}
+
+	addMonthSelectorListener(callback) {
+		this.on(MONTH_SELECTOR_NOTIFIED, callback);
 	}
 
 	removeChangeListener(callback) {
@@ -67,17 +127,36 @@ AppDispatcher.register(function(payload) {
 	switch(payload.actionType) {
 		
 		case AppConstants.FETCH_INVOICES_FROM_SERVER:
-			invoicesStore.getAll().then((data) => {
-				invoicesStore.emitChange();
-			});
+			//invoicesStore.getAll(payload.data).then((data) => {
+				invoicesStore.emitChange(payload.data);
+			//});
 		break;
 		case AppConstants.PERSIST_INVOICE:
 			invoicesStore.save(payload.data).then((response) => {
-				invoicesStore.emitChange();
+				invoicesStore.notifyMonthSelector();
 			}, function(err) {
 				//emit something about error
 			});
 		break;
+		case AppConstants.TOGGLE_PAYMENT:
+			invoicesStore.togglePayment(payload.data).then((response) => {
+				invoicesStore.notifyMonthSelector();
+			}, function(err) {
+				//emit something about error
+			});
+		break;
+		case AppConstants.TOGGLE_EDIT_LINE:
+			invoicesStore.toggleEditLine(payload.data);
+		break;
+		case AppConstants.REMOVE_LINE:
+			invoicesStore.removeLine(payload.data).then((response) => {
+				invoicesStore.notifyMonthSelector();
+			}, function(err) {
+				//emit something about error
+			});
+		break;
+
+		
 
 						
 		default:
