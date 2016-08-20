@@ -43,6 +43,7 @@ class ListController {
 
 	}
 
+
 	static saveInvoice(req, res, next) {
 
 		Invoices
@@ -72,6 +73,9 @@ class ListController {
 		.catch(next);
 	}
 
+	/***
+	* @description retourne la réponse
+	*/
 	static sendHttp(res, data, code=200) {
 		if (code != 201)
 			res.status(code).json(data);
