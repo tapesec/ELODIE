@@ -1,7 +1,7 @@
 'use strict';
 
 var Invoices = require("./../models/Patient");
-var Handlebars = require('Handlebars');
+var Handlebars = require('handlebars');
 var pdf = require('html-pdf');
 var path = require('path');
 var pdfConfig = require('./../export-formats-template/pdf/config.js');
