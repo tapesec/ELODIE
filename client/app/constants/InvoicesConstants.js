@@ -4,5 +4,7 @@ export default {
   PERSIST_INVOICE: "persist",
   TOGGLE_PAYMENT: "toggle",
   TOGGLE_EDIT_LINE: "toggleEditLine",
-  REMOVE_LINE: "removeLine"
+  REMOVE_LINE: "removeLine",
+  ASK_PDF: "askPdf",
+  GET_PDF: "getPDF"
 };

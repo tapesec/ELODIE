@@ -58,4 +58,18 @@ export default class InvoicesDao {
 			});
 		});	
 	}
+
+	static getPDF(dateParams) {
+
+		return new Promise((resolve, reject) => {
+			request
+			.get("/invoices")
+			.query({ format: "pdf" })
+			.query(dateParams)
+			.end((err, res) => {
+				if (err) return reject(err);
+				resolve(res.statusCode);
+			});
+		});	
+	}
 };

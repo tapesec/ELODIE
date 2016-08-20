@@ -38,4 +38,17 @@ export default class InvoicesActions {
 			data: { id }
 		});	
 	}
+
+	static askExportPDF() {
+		AppDispatcher.dispatch({
+			actionType: InvoicesConstants.ASK_PDF
+		});		
+	}
+
+	static getPDF(timestamp) {
+		AppDispatcher.dispatch({
+			actionType: InvoicesConstants.GET_PDF,
+			data: { date: timestamp }
+		});
+	}
 };

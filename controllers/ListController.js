@@ -1,6 +1,10 @@
 'use strict';
 
 var Invoices = require("./../models/Patient");
+var Handlebars = require('Handlebars');
+var pdf = require('html-pdf');
+var path = require('path');
+var pdfConfig = require('./../export-formats-template/pdf/config.js');
 
 class ListController {
 
@@ -9,15 +13,33 @@ class ListController {
 	*/
 	static getInvoices(req, res, next) {
 		console.log(req.query, 'req query');
+		
 		Invoices
 		.getAll(req.query)
 		.then(function(data) {
-			ListController.sendHttp(res, data);
+			console.log(data, 'data');
+			if (req.query.format == "pdf") {
+				let source = require('./../export-formats-template/pdf/invoices-table-template.js');
+				let templatePdf = Handlebars.compile(source);
+				let html = templatePdf({ invoices: data });
+				console.log(pdfConfig, 'html');
+
+				pdf.create(html, pdfConfig).toFile('./factures.pdf', function(err, facturePdf) {
+				  	if (err) return console.log(err);
+				  	console.log(facturePdf); // { filename: '/app/businesscard.pdf' }
+				  	//res.sendFile(path.resolve(__dirname + '/../client/index.html'));
+				  	res.contentType("application/pdf");
+				  	res.send(facturePdf);
+				});
+			} else {
+				ListController.sendHttp(res, data);
+			}
 		})
 		.catch(function(err) {
 			console.log(err);
 			ListController.sendHttp(res, err, 500);	
 		});
+		
 
 	}
 

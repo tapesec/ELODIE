@@ -21,8 +21,8 @@ export default class InvoicesLine extends React.Component {
 
 		return (    
 
-			<tr onDoubleClick={this._onDoubleClick.bind(this)} className={lineChecked}>
-				<td>{ moment(item.date).format('dddd DD MMMM') }</td>
+			<tr onDoubleClick={this._onDoubleClick.bind(this)} className={lineChecked + " pointer"}>
+				<td className="date-line">{ moment(item.date).format('dddd DD MMMM') }</td>
 				<td>{ item.patient_name }</td>
 				<td>
 					{ item.patient_share.value } 

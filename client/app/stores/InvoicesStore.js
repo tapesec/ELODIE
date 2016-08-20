@@ -7,7 +7,8 @@ import { EventEmitter } from 'events';
 
 const CHANGE_EVENT = 'change'
 ,	  TOGGLE_EDIT_LINE = 'toggle_edit'
-,	  MONTH_SELECTOR_NOTIFIED = "month_notified";
+,	  MONTH_SELECTOR_NOTIFIED = "month_notified"
+,	  MONTH_SELECTOR_NOTIFIED_PDF = "month_notified_pdf";
 
 
 class InvoicesStore extends EventEmitter {
@@ -89,6 +90,18 @@ class InvoicesStore extends EventEmitter {
 		});
 	}
 
+	getPDF(data) {
+		return new Promise((resolve, reject) => {
+			InvoicesDao.getPDF(data)
+			.then((statusCode) => {
+				resolve(statusCode);
+			}, (err) => {
+				// do something in case of error
+				reject(err);
+			});
+		});	
+	}
+
 	toggleEditLine(data) {
 		this.emit(TOGGLE_EDIT_LINE, data);
 	}
@@ -102,6 +115,13 @@ class InvoicesStore extends EventEmitter {
 		this.emit(MONTH_SELECTOR_NOTIFIED);
 	}
 
+	notifyMonthSelectorNeedPDF() {
+		setTimeout(function() {
+			this.emit(MONTH_SELECTOR_NOTIFIED_PDF);		
+		}.bind(this), 200);
+		
+	}
+
 	addChangeListener(callback) {
 		this.on(CHANGE_EVENT, callback);
 	}
@@ -112,6 +132,10 @@ class InvoicesStore extends EventEmitter {
 
 	addMonthSelectorListener(callback) {
 		this.on(MONTH_SELECTOR_NOTIFIED, callback);
+	}
+
+	addMonthSelectorPDFListener(callback) {
+		this.on(MONTH_SELECTOR_NOTIFIED_PDF, callback);
 	}
 
 	removeChangeListener(callback) {
@@ -155,8 +179,14 @@ AppDispatcher.register(function(payload) {
 				//emit something about error
 			});
 		break;
-
-		
+		case AppConstants.ASK_PDF:
+			invoicesStore.notifyMonthSelectorNeedPDF();
+		break;
+		case AppConstants.GET_PDF:
+			invoicesStore.getPDF(payload.data).then((response) => {
+				
+			});
+		break;
 
 						
 		default:

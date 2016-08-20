@@ -3,6 +3,7 @@
 import React from 'react';
 import InvoicesActions from './../actions/InvoicesActions.js';
 import invoicesStore from './../stores/InvoicesStore.js';
+import moment from 'moment';
 
 require("!style!css!less!./../../css/InvoicesInlineForm.less");
 
@@ -12,7 +13,7 @@ export default class InvoicesInlineForm extends React.Component {
     constructor() {
         super();
         this.state = {
-            date: "",
+            date: moment.utc().format('YYYY-MM-DD'),
             patient_name: "",
             patient_share: {
                 value: ""
@@ -21,7 +22,8 @@ export default class InvoicesInlineForm extends React.Component {
                 value: ""
             },
             submit_btn_name: "Ajouter",
-            error_message: ""
+            error_message: "",
+            isClean: true
         };
     }
 
@@ -30,6 +32,7 @@ export default class InvoicesInlineForm extends React.Component {
     }
 
 	render() {
+
 		return (
             <row>
                 <div className="col-lg-10 col-lg-offset-1">
@@ -40,7 +43,7 @@ export default class InvoicesInlineForm extends React.Component {
 
                       <div className="form-group">
                         <input 
-                            value={this.state.date} 
+                            value={moment.utc(this.state.date).format('YYYY-MM-DD')} 
                             onChange={this._handleDateChange.bind(this)} 
                             type="Date" 
                             className="form-control"/>
@@ -75,7 +78,7 @@ export default class InvoicesInlineForm extends React.Component {
                       </div>
 
                       <div className="form-group">
-                        <button onClick={this._cleanForm.bind(this)} type="button" className="btn btn-warning"><span className="glyphicon glyphicon-chevron-left"></span> Effacer</button>
+                        <button onClick={this._cleanForm.bind(this)} disabled={this.state.isClean} type="button" className="btn btn-warning"><span className="glyphicon glyphicon-chevron-left"></span> Effacer</button>
                         <button type="submit" className="pull-right btn btn-primary">{this.state.submit_btn_name}</button>
                       </div>
 
@@ -89,12 +92,14 @@ export default class InvoicesInlineForm extends React.Component {
         this.setState({
             date: e.target.value
         });
+        this._checkIfClean(this.state);
     }
 
     _handleNameChange(e) {
         this.setState({
             patient_name: e.target.value
         });
+        this._checkIfClean(this.state);
     }
 
     _handlePatientShareChange(e) {
@@ -103,6 +108,7 @@ export default class InvoicesInlineForm extends React.Component {
                 value: e.target.value
             }
         });
+        this._checkIfClean(this.state);
     }
 
     _handleSecuShareChange(e) {
@@ -111,6 +117,7 @@ export default class InvoicesInlineForm extends React.Component {
                 value: e.target.value
             }
         });
+        this._checkIfClean(this.state);
     }
 
 
@@ -128,12 +135,11 @@ export default class InvoicesInlineForm extends React.Component {
 
     _populateForm(data) {
         this.setState(data.dataToEdit);
-        this.setState({ submit_btn_name: "Modifier"});
+        this.setState({ submit_btn_name: "Modifier", isClean: false });
     }
 
     _isValidForm(data) {
-        console.log(data, 'data to check');
-        let date = (data.date != "")? data.date : new Date();
+
         if (data.patient_name == "" || data.patient_name.length < 2)
             return false;
         if (data.patient_share.value == "")
@@ -147,7 +153,7 @@ export default class InvoicesInlineForm extends React.Component {
     _cleanForm() {
         delete this.state;
         this.setState({
-            date: "",
+            date: moment.utc().format('YYYY-MM-DD'),
             patient_name: "",
             patient_share: {
                 value: ""
@@ -156,7 +162,23 @@ export default class InvoicesInlineForm extends React.Component {
                 value: ""
             },
             submit_btn_name: "Ajouter",
-            error_message: ""
+            error_message: "",
+            isClean: true
         });
+    }
+
+    _checkIfClean(data) {
+       if (data.patient_name == "" &&
+           data.patient_share == "" &&
+           data.SECU_share == "")
+        {
+            this.setState({
+                isClean: true
+            });
+        } else {
+            this.setState({
+                isClean: false
+            });
+        }
     }
 };

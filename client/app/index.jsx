@@ -8,6 +8,7 @@ import {render} from 'react-dom';
 import MonthSelector from './components/MonthSelector.react.js';
 import InvoicesInlineForm from './components/InvoicesInlineForm.react.jsx';
 import Table from './components/TableInvoices.react.jsx';
+import ButtonExportPdf from './components/ButtonExportPdf.react.jsx';
 
 require("!style!css!less!./../css/index.less");
 
@@ -22,7 +23,9 @@ class Container extends React.Component {
 				<row>
 					<div className="col-lg-10 col-lg-offset-1">
 						<div className="page-header col-lg-12">
-							<h1><i className="fa fa-stethoscope"></i> ELODIE <small>Tableau de gestion des paiments</small></h1>
+							<h1>
+								<i className="fa fa-stethoscope"></i> ELODIE <small>Tableau de gestion des paiments</small>
+							</h1>
 						</div>
 					</div>
 				</row>
