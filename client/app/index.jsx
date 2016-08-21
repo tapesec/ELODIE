@@ -19,7 +19,7 @@ class Container extends React.Component {
 	
 	render() {
 		return (
-			<div className="container">
+			<div className="container-fluid">
 				<row>
 					<div className="col-lg-10 col-lg-offset-1">
 						<div className="page-header col-lg-12">
