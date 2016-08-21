@@ -74,7 +74,7 @@ export default class InvoicesInlineForm extends React.Component {
                             onChange={this._handleSecuShareChange.bind(this)} 
                             type="Number" step="0.01"
                             className="form-control" 
-                            placeholder="Part mutuelle"/>
+                            placeholder="Part CPAM"/>
                       </div>
 
                       <div className="form-group">
