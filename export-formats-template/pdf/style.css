@@ -1,17 +1,24 @@
-table {
-	width: 100%;
-	white-space: normal;
-    line-height: normal;
-    font-weight: normal;
-    font-size: medium;
-    font-style: normal;
-    color: -internal-quirk-inherit;
-    text-align: start;
-    font-variant: normal normal;
-    color: blue;
-    border: 1px solid black;
+.month-label {
+    text-align: center;
+    text-transform: capitalize;
+}
+.striped {
+    text-decoration: line-through;
 }
 
-table tr td {
-	color: blue;
+.date-line {
+    text-transform: capitalize;
+}
+
+@media print { 
+
+	.text-primary { 
+		color: DodgerBlue; 
+	}
+
+	table tr td, table tr th {
+        page-break-inside: auto;
+        page-break-after: auto;
+    }
+
 }

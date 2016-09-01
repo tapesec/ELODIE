@@ -8,7 +8,8 @@ import { EventEmitter } from 'events';
 const CHANGE_EVENT = 'change'
 ,	  TOGGLE_EDIT_LINE = 'toggle_edit'
 ,	  MONTH_SELECTOR_NOTIFIED = "month_notified"
-,	  MONTH_SELECTOR_NOTIFIED_PDF = "month_notified_pdf";
+,	  MONTH_SELECTOR_NOTIFIED_PDF = "month_notified_pdf"
+,	  TOGGLE_OFF_PDF_SPINNER = "TOGGLE_OFF_PDF_SPINNER";
 
 
 class InvoicesStore extends EventEmitter {
@@ -141,6 +142,14 @@ class InvoicesStore extends EventEmitter {
 	removeChangeListener(callback) {
 		this.removeListener(CHANGE_EVENT, callback);
 	}
+
+	notifyPDFready() {
+		this.emit(TOGGLE_OFF_PDF_SPINNER);
+	}
+
+	addToggleLoadingPdfButtonListener(callback) {
+		this.on(TOGGLE_OFF_PDF_SPINNER, callback);
+	}
 	
 };
 
@@ -184,7 +193,13 @@ AppDispatcher.register(function(payload) {
 		break;
 		case AppConstants.GET_PDF:
 			invoicesStore.getPDF(payload.data).then((response) => {
-				
+				// crée une balise a virtuel pour simuler le click vers le document
+				var tempLink;
+				tempLink = document.createElement('a');
+				tempLink.href = "/download/pdf/"+response.filename;
+				tempLink.setAttribute('download', response.filename);
+				tempLink.click();
+				invoicesStore.notifyPDFready();
 			});
 		break;
 

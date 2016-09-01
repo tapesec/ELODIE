@@ -43,7 +43,8 @@
     "react-dom": "^15.3.0",
     "serve-favicon": "~2.3.0",
     "style-loader": "^0.13.1",
-    "superagent": "^2.1.0",
+    "superagent": "^2.2.0",
+    "superagent-binary-parser": "^1.0.0",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.1"
   },

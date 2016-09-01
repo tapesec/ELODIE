@@ -47,7 +47,6 @@ export default class InvoicesDao {
 	}
 
 	static remove(data) {
-		console.log(data, 'data');
 
 		return new Promise((resolve, reject) => {
 			request
@@ -59,6 +58,10 @@ export default class InvoicesDao {
 		});	
 	}
 
+	/***
+	* @description crée en fait sur le serveur un pdf contenant les infos du mois courant
+	* @TODO l'url de la ressource doit changé par quelque chose du style /invoices/pdf/location
+	*/
 	static getPDF(dateParams) {
 
 		return new Promise((resolve, reject) => {
@@ -68,7 +71,7 @@ export default class InvoicesDao {
 			.query(dateParams)
 			.end((err, res) => {
 				if (err) return reject(err);
-				resolve(res.statusCode);
+				resolve(res.body);
 			});
 		});	
 	}

@@ -24,7 +24,7 @@ class Container extends React.Component {
 					<div className="col-lg-10 col-lg-offset-1">
 						<div className="page-header col-lg-12">
 							<h1>
-								<i className="fa fa-stethoscope"></i> ELODIE <small>Tableau de gestion des paiments</small>
+								<i className="fa fa-stethoscope"></i> ELODIE <small>Tableau de gestion des paiments <ButtonExportPdf /></small>
 							</h1>
 						</div>
 					</div>

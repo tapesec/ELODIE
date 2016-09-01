@@ -28,7 +28,6 @@ export default class Table extends React.Component {
 
 	componentDidMount () {
 		console.log("component did mount ..");
-		//console.log("table component : > ask action fetch from server");
 		invoicesStore.addChangeListener(this._onChange.bind(this));
 		InvoicesActions.fetchFromServer(new Date().getTime());
   	}

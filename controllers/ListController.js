@@ -4,6 +4,9 @@ var Invoices = require("./../models/Patient");
 var Handlebars = require('handlebars');
 var pdf = require('html-pdf');
 var path = require('path');
+var moment = require('moment');
+var fs = require('fs');
+
 var pdfConfig = require('./../export-formats-template/pdf/config.js');
 
 class ListController {
@@ -12,35 +15,53 @@ class ListController {
 	* @description retourne la liste des factures
 	*/
 	static getInvoices(req, res, next) {
-		console.log(req.query, 'req query');
 		
 		Invoices
 		.getAll(req.query)
 		.then(function(data) {
-			console.log(data, 'data');
-			if (req.query.format == "pdf") {
-				let source = require('./../export-formats-template/pdf/invoices-table-template.js');
-				let templatePdf = Handlebars.compile(source);
-				let html = templatePdf({ invoices: data });
-				console.log(pdfConfig, 'html');
-
-				pdf.create(html, pdfConfig).toFile('./factures.pdf', function(err, facturePdf) {
-				  	if (err) return console.log(err);
-				  	console.log(facturePdf); // { filename: '/app/businesscard.pdf' }
-				  	//res.sendFile(path.resolve(__dirname + '/../client/index.html'));
-				  	res.contentType("application/pdf");
-				  	res.send(facturePdf);
-				});
-			} else {
-				ListController.sendHttp(res, data);
-			}
+			ListController.sendHttp(res, data);
 		})
 		.catch(function(err) {
-			console.log(err);
 			ListController.sendHttp(res, err, 500);	
 		});
 		
 
+	}
+
+	/***
+	* @description crée et sauvegarde le tableau des factures au format pdf dans documents/pdf
+	* @return le nom du fichier sauvegardé
+	*/
+	static generatePdf(req, res, next) {
+		Invoices
+		.getAll(req.query)
+		.then(function(data) {
+
+			var data = JSON.parse(JSON.stringify(data));
+			var dateMonth = moment(parseInt(req.query.date)).format('MMMM YYYY');
+
+			let dataWithTotals = {
+				lines : data,
+				date : dateMonth,
+				totals: Invoices.getTotalsInvoices(data)
+			};
+
+			for (let i = 0; i < dataWithTotals.lines.length; i++) {
+				let formatedDate = moment(JSON.parse(JSON.stringify(dataWithTotals.lines[i].date))).format('dddd DD MMMM');
+				dataWithTotals.lines[i].date = formatedDate;
+			}
+
+			let source = require('./../export-formats-template/pdf/invoices-table-template.js');
+			let templatePdf = Handlebars.compile(source);
+			let html = templatePdf({ invoices: dataWithTotals });
+
+			var filename = 'factures-' + dateMonth.replace(" ","-") + '.pdf';
+			pdf.create(html, pdfConfig).toFile('./documents/pdf/' + filename, function(err, file) {
+			  	if (err) return console.log(err);
+			  	else ListController.sendHttp(res, { filename });
+			});
+
+		})
 	}
 
 

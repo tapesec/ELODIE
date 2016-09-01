@@ -9,33 +9,48 @@ let template = "";
 template += 
 '<!DOCTYPE html>' +
 '<head>' +
-'<link href="http://localhost:300/style.css", rel="stylesheet">' +
 '<meta charset="utf-8">' +
+'<link href="export-formats-template/pdf/style.css" media="print" type="text/css" rel="stylesheet">' +
+'<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" media="print" type="text/css" rel="stylesheet">' +
+
 '</head>' +
 '<body>' +
-'<table>' +
-	'<thead>' +
-		'<tr>' +
-			'<th>Date</th>' +
-			'<th>Nom</th>' +
-			'<th>Patient ()</th>' +
-			'<th>CPAM ()</th>' +
-			'<th>Total ()</th>' +
-			'<th>Payé ()</th>' +
-		'</tr>' +
-	'</thead>' +
-	'<tbody>' +
-		'{{#each invoices}}' +
+
+'<row>' +
+	'<div class="col-lg-4 col-lg-offset-4">' +
+		'<h2 class="text-primary month-label">' +
+			'{{invoices.date}}' +
+		'</h2>' +
+	'</div>' +
+'</row>' +
+'<row>' +
+'<div class="col-lg-10 col-lg-offset-1">' +
+	'<table class="table table-striped table-bordered table-hover">' +
+		'<thead>' +
 			'<tr>' +
-				'<td>22/07/1983</td>' +
-				'<td>{{ patient_name }}</td>' +
-				'<td>{{ patient_share.value }}</td>' +
-				'<td>{{ SECU_share.value}}</td>' +
-				'<td></td>' +
+				'<th>Date</th>' +
+				'<th>Nom</th>' +
+				'<th>Patient ({{invoices.totals.total_patient_share}}€)</th>' +
+				'<th>CPAM ({{invoices.totals.total_SECU_share}}€)</th>' +
+				'<th>Total ({{invoices.totals.total_global_no_paid}}€)</th>' +
+				'<th>Payé ({{invoices.totals.total_global_paid}}€)</th>' +
 			'</tr>' +
-		'{{/each}}'
-	'</tbody>' +
-'</table>'
+		'</thead>' +
+		'<tbody>' +
+			'{{#each invoices.lines}}' +
+				'<tr>' +
+					'<td class="date-line">{{date}}</td>' +
+					'<td>{{ patient_name }}</td>' +
+					'<td>{{ patient_share.value }}</td>' +
+					'<td>{{ SECU_share.value}}</td>' +
+					'<td>{{ total_line }}</td>' +
+					'<td>{{ total_line_paid }}</td>' +
+				'</tr>' +
+			'{{/each}}'
+		'</tbody>' +
+	'</table>' +
+'</div>' +
+'</row>' +
 '</body>';
 
 

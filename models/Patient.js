@@ -25,25 +25,78 @@ var invoiceSchema = new Schema({
 
 invoiceSchema.plugin(patcher);
 
-invoiceSchema.virtual('total').get(function () {
-    return (this.patient_share + this.SECU_share);
+invoiceSchema.set('toObject', { getters: true, virtuals: true  });
+invoiceSchema.set('toJSON', {
+   virtuals: true
+});
+
+invoiceSchema.virtual('total_line').get(function () {
+    
+    return this.patient_share.value + this.SECU_share.value;
+});
+
+invoiceSchema.virtual('total_line_paid').get(function () {
+    
+    let total = 0;
+    if (this.patient_share.paid) total += this.patient_share.value;
+    if (this.SECU_share.paid) total+= this.SECU_share.value;
+
+    return total;
 });
 
 invoiceSchema.statics.getAll = function(param) {
     var deferred = Q.defer();
-    let interval = _generateMouthInterval(parseInt(param.date));
-    this.find({
-        date: { 
-            $gte: interval.gte,
-            $lt: interval.lt
-        },
-        removed: false
-    }, function(err, data) {
+    let QueryBuilder = this.find({ removed: false });
+    
+    // paramètres du mois (timestamp) ..
+    if (param.date) {
+        let interval = _generateMouthInterval(parseInt(param.date));
+        QueryBuilder.where({
+            date: { 
+                $gte: interval.gte,
+                $lt: interval.lt
+            }
+        });
+    }
+    
+    QueryBuilder.exec(function(err, data) {
         if (err) return deferred.reject(err);
         else deferred.resolve(data);
     });
+
     return deferred.promise;
 };
+
+/***
+* @description retourne le total de chaque colonne de la facturation
+*/
+invoiceSchema.statics.getTotalsInvoices = function(invoicesLines) {
+    
+    var total_SECU_share = 0
+    ,   total_patient_share = 0
+    ,   total_global_no_paid = 0
+    ,   total_global_paid = 0;
+
+    invoicesLines.forEach(function(line) {
+        
+        total_SECU_share += line.SECU_share.value;
+        total_patient_share += line.patient_share.value;
+        
+        if (line.SECU_share.paid) total_global_paid += line.SECU_share.value;
+        else total_global_no_paid += line.SECU_share.value;
+
+        if (line.patient_share.paid) total_global_paid += line.patient_share.value;
+        else total_global_no_paid += line.patient_share.value;
+
+    });
+
+    return { 
+        total_SECU_share: total_SECU_share.toFixed(2), 
+        total_patient_share: total_patient_share.toFixed(2), 
+        total_global_no_paid: total_global_no_paid.toFixed(2), 
+        total_global_paid: total_global_paid.toFixed(2) 
+    };
+}
 
 invoiceSchema.methods.create = function(data) {
     return this.save(data);

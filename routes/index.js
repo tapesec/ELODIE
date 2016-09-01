@@ -12,7 +12,11 @@ router.get('/', function(req, res, next) {
 
 /* GET home page. */
 router.get('/invoices', function(req, res, next) {
-  ListController.getInvoices(req, res, next);
+	if (req.query && req.query.format && req.query.format == "pdf") {
+		ListController.generatePdf(req, res, next);
+	} else {
+		ListController.getInvoices(req, res, next);
+	}
 });
 
 router.post('/invoice', function(req, res, next) {
