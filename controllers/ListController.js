@@ -56,6 +56,7 @@ class ListController {
 			let html = templatePdf({ invoices: dataWithTotals });
 
 			var filename = 'factures-' + dateMonth.replace(" ","-") + '.pdf';
+			console.log("pdf created and save in : ./documents/pdf/"+filename);
 			pdf.create(html, pdfConfig).toFile('./documents/pdf/' + filename, function(err, file) {
 			  	if (err) return console.log(err);
 			  	else ListController.sendHttp(res, { filename });
