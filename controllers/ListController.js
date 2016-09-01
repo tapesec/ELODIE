@@ -55,9 +55,10 @@ class ListController {
 			let templatePdf = Handlebars.compile(source);
 			let html = templatePdf({ invoices: dataWithTotals });
 
+			console.log(process.env.PWD, 'PWD');
 			var filename = 'factures-' + dateMonth.format('MM-YYYY') + '.pdf';
-			console.log("pdf created and save in : ./documents/pdf/"+filename);
-			pdf.create(html, pdfConfig).toFile('./documents/pdf/' + filename, function(err, file) {
+			console.log("pdf created and save in : " + process.env.PWD + "/documents/pdf/"+filename);
+			pdf.create(html, pdfConfig).toFile(process.env.PWD +'/documents/pdf/' + filename, function(err, file) {
 			  	if (err) return console.log(err);
 			  	else ListController.sendHttp(res, { filename });
 			});

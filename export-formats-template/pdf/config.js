@@ -1,5 +1,10 @@
+const path = require('path');
+
+//console.log(path.resolve(__dirname +'/../../'));
+
 config = {
   // Rendering options
+  "base": "file://"+process.env.PWD+"/", // Base path that's used to load files (images, css, js) when they aren't referenced using a host
 
   // Zooming option, can be used to scale images if `options.type` is not pdf
   "zoomFactor": "1", // default is 1
@@ -15,13 +20,5 @@ config = {
   }
 
 };
-
-if (process.env.NODE_ENV == "production") {
-  // Base path that's used to load files (images, css, js) when they aren't referenced using a host
-  config.base = "https://elodidel.herokuapp.com";
-} else {
-  config.base = "file:///Users/lionneldupouy/ELODIE/";
-}
-
 
 module.exports = config;

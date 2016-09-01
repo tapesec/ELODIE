@@ -1,3 +1,6 @@
+process.env.PWD = process.cwd();
+console.log(process.env.PWD, 'PWD app');
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
