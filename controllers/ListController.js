@@ -38,11 +38,11 @@ class ListController {
 		.then(function(data) {
 
 			var data = JSON.parse(JSON.stringify(data));
-			var dateMonth = moment(parseInt(req.query.date)).format('MMMM YYYY');
+			var dateMonth = moment(parseInt(req.query.date));
 
 			let dataWithTotals = {
 				lines : data,
-				date : dateMonth,
+				date : dateMonth.format('MMMM YYYY'),
 				totals: Invoices.getTotalsInvoices(data)
 			};
 
@@ -55,7 +55,7 @@ class ListController {
 			let templatePdf = Handlebars.compile(source);
 			let html = templatePdf({ invoices: dataWithTotals });
 
-			var filename = 'factures-' + dateMonth.replace(" ","-") + '.pdf';
+			var filename = 'factures-' + dateMonth.format('MM-YYYY') + '.pdf';
 			console.log("pdf created and save in : ./documents/pdf/"+filename);
 			pdf.create(html, pdfConfig).toFile('./documents/pdf/' + filename, function(err, file) {
 			  	if (err) return console.log(err);
