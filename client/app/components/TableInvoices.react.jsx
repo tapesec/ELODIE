@@ -77,7 +77,7 @@ export default class Table extends React.Component {
 								<th>Date</th>
 								<th>Nom</th>
 								<th>Patient ({total_patient.toFixed(2)}€)</th>
-								<th>CPAM ({total_cpam}€)</th>
+								<th>CPAM ({total_cpam.toFixed(2)}€)</th>
 								<th>Total ({(total_patient + total_cpam).toFixed(2)}€)</th>
 								<th>Payé ({(total_paid).toFixed(2)}€)</th>
 							</tr>
