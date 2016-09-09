@@ -3,9 +3,9 @@ import InvoicesConstants from './../constants/InvoicesConstants.js';
 
 export default class InvoicesActions {
 	
-	static fetchFromServer(timestamp) {
+	static changeCurrentMonth(timestamp) {
 		AppDispatcher.dispatch({
-			actionType: InvoicesConstants.FETCH_INVOICES_FROM_SERVER,
+			actionType: InvoicesConstants.NOTIFY_CURRENT_MONTH,
 			data: { date: timestamp }
 		});
 	}
@@ -38,16 +38,9 @@ export default class InvoicesActions {
 		});	
 	}
 
-	static askExportPDF() {
-		AppDispatcher.dispatch({
-			actionType: InvoicesConstants.ASK_PDF
-		});		
-	}
-
 	static getPDF(timestamp) {
 		AppDispatcher.dispatch({
 			actionType: InvoicesConstants.GET_PDF,
-			data: { date: timestamp }
 		});
 	}
 };

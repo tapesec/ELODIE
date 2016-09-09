@@ -31,10 +31,14 @@ export default class InvoicesInlineForm extends React.Component {
         invoicesStore.addToggleEditModListener(this._populateForm.bind(this));
     }
 
+    componentWillUnmount() {
+        invoicesStore.removeToggleEditModListener(this._populateForm.bind(this));
+    }
+
 	render() {
 
 		return (
-            <row>
+            <div>
                 <div className="col-lg-10 col-lg-offset-1">
                     <p className="text-danger">{this.state.error_message}</p>
                 </div>
@@ -84,7 +88,7 @@ export default class InvoicesInlineForm extends React.Component {
 
                   </form>
               </div>
-          </row>
+          </div>
 		);
 	}
 

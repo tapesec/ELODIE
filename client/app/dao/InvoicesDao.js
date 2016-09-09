@@ -8,7 +8,6 @@ export default class InvoicesDao {
 			.get("/invoices")
 			.query(dateParams)
 			.end((err, res) => {
-				console.log(res.body, 'res body');
 				if (err) return reject(err);
 				resolve(res.body);
 			});

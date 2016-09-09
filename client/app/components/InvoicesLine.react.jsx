@@ -40,8 +40,14 @@ export default class InvoicesLine extends React.Component {
 						type="checkbox" 
 						checked={ item.SECU_share.paid }/>
 				</td>
-				<td>{ (item.patient_share.value + item.SECU_share.value).toFixed(2) }</td>
-				<td>{ item.total_paid_per_line } € <span onClick={this._onDelete.bind(this)} className="pull-right glyphicon glyphicon-trash"></span></td>
+				<td>{ item.total_line } €</td>
+				<td>
+					{ item.total_line_paid } € 
+					<span 
+						onClick={this._onDelete.bind(this)} 
+						className="pull-right glyphicon glyphicon-trash">
+					</span>
+				</td>
 			</tr>
 
 		);

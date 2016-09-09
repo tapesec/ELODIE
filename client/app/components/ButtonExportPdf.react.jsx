@@ -22,6 +22,10 @@ export default class ButtonExportPdf extends React.Component {
         invoicesStore.addToggleLoadingPdfButtonListener(this._toggleOffSpinner.bind(this));
     }
 
+    componentWillUnmount() {
+    	invoicesStore.removeLoadingPdfButtonListener(this._toggleOffSpinner.bind(this));
+    }
+
 	render() {
 
 		let spinner = classNames({
@@ -43,7 +47,7 @@ export default class ButtonExportPdf extends React.Component {
 
 	_onRequestPdf() {
 		if (this.state.loading == false) {
-			InvoicesActions.askExportPDF();
+			InvoicesActions.getPDF();
 			this.setState({
 				loading: true
 			});	

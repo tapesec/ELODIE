@@ -6,6 +6,7 @@ var pdf = require('html-pdf');
 var path = require('path');
 var moment = require('moment');
 var fs = require('fs');
+var _ = require('lodash');
 
 var pdfConfig = require('./../export-formats-template/pdf/config.js');
 
@@ -19,7 +20,17 @@ class ListController {
 		Invoices
 		.getAll(req.query)
 		.then(function(data) {
-			ListController.sendHttp(res, data);
+			console.log(req.query.date, 'query date');
+			let dataWithTotalsIndexedByMonth = {};
+			dataWithTotalsIndexedByMonth = {
+				invoices : _.keyBy(data, function(line) {
+					return line._id;
+				}),
+				dateMonth : parseInt(req.query.date, 10),
+				totals: Invoices.getTotalsInvoices(data)
+			};
+			console.log(dataWithTotalsIndexedByMonth, 'data');
+			ListController.sendHttp(res, dataWithTotalsIndexedByMonth);
 		})
 		.catch(function(err) {
 			ListController.sendHttp(res, err, 500);	
@@ -100,8 +111,10 @@ class ListController {
 	* @description retourne la réponse
 	*/
 	static sendHttp(res, data, code=200) {
-		if (code != 201)
+		if (code != 201 || code != 500)
 			res.status(code).json(data);
+		else if (code == 500)
+			res.next(data);
 		else
 			res.status(code).end();
 	}

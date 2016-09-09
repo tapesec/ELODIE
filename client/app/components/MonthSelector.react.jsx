@@ -14,69 +14,44 @@ export default class MonthSelector extends React.Component {
 
 	constructor() {
 		super();
-		this.state = {
-			current_timestamp: new Date().getTime()
-		};
+		this._getPrevMonth = this._getPrevMonth.bind(this);
+		this._getNextMonth = this._getNextMonth.bind(this);
 	}
-
-	componentDidMount() {
-		invoicesStore.addMonthSelectorListener(this._notify.bind(this));
-		invoicesStore.addMonthSelectorPDFListener(this._sendDateForPDF.bind(this));
-		//this._notify();
-	}
-
-	_notify() {
-		console.log("notification emited from picker ..")
-		InvoicesActions.fetchFromServer(this.state.current_timestamp);
-	}
-
-	_sendDateForPDF() {
-		InvoicesActions.getPDF(this.state.current_timestamp)
-	}
-
 
 	render() {
 		return (
-
-	        <row>
+		    <div>
 	        	<div className="col-lg-1 col-lg-offset-3">
 	        		<span 
-	        			onClick={this._getPrevMonth.bind(this)} 
+	        			onClick={this._getPrevMonth} 
 	        			className="h2 glyphicon glyphicon-arrow-left pull-right pointer">
 	        		</span>
 	        	</div>
 	        	<div className="col-lg-4">
 	        		<h2 className="text-primary month-label">
-	        		 	{ moment(this.state.current_timestamp).format("MMMM YYYY") } 
+	        		 	{ moment(this.props.date).format("MMMM YYYY") } 
 	        		</h2>
 	        	</div>
 	        	<div className="col-lg-1">
 	        		<span 
-	        			onClick={this._getNextMonth.bind(this)}
+	        			onClick={this._getNextMonth}
 	        			className="h2 glyphicon glyphicon-arrow-right pointer">
 	        		</span>
 	        	</div>
-	        </row>
+        	</div>
 		);
 	}
 
 	_getPrevMonth() {
-		let old_ts = this.state.current_timestamp;
+		let old_ts = this.props.date;
 		let new_ts = moment(old_ts).subtract(1, 'months').valueOf();
-		this.setState({
-			current_timestamp: new_ts
-		});
-		InvoicesActions.fetchFromServer(new_ts);
+		InvoicesActions.changeCurrentMonth(new_ts);
 	}
 
 	_getNextMonth() {
-		let old_ts = this.state.current_timestamp;
+		let old_ts = this.props.date;
 		let new_ts = moment(old_ts).add(1, 'months').valueOf();
-		this.setState({
-			current_timestamp: new_ts
-		});
-		console.log(this.state.current_timestamp, 'check param');
-		InvoicesActions.fetchFromServer(new_ts);
+		InvoicesActions.changeCurrentMonth(new_ts);
 	}
 
 }
