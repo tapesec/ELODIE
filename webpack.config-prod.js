@@ -34,14 +34,18 @@ var config = {
       		minimize: true,
       		compress: {
         		warnings: false
-      		}
-    	})/*,
+      		},
+      		output: {
+                comments: false,
+            }
+    	}),
     	new webpack.DefinePlugin({
       		'process.env': {
         		'NODE_ENV': JSON.stringify('production')
       		}
-    	})*/
-  	]
+    	})
+  	],
+  	devtool: "cheap-module-source-map"
 };
 
 module.exports = config;
