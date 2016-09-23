@@ -8,12 +8,51 @@ export default class InvoicesDao {
 			.get("/invoices")
 			.query(dateParams)
 			.end((err, res) => {
+				console.log("invoices fetched !");
 				if (err) return reject(err);
 				resolve(res.body);
 			});
 			
 		});
 		
+	}
+
+	static persist(id, data) {
+		return new Promise((resolve, reject) => {
+			if (id) {
+
+				let patch_describer = [
+					{ op: 'replace', path: '/date', value: data.date },
+					{ op: 'replace', path: '/patient_name', value: data.patient_name },
+					{ op: 'replace', path: '/patient_share/value', value: data.patient_share_value },
+					{ op: 'replace', path: '/SECU_share/value', value: data.SECU_share_value }
+				];
+
+				InvoicesDao.update({ id, patch_describer: patch_describer })
+				.then((statusCode) => {
+					return resolve();
+				}, (err) => {
+					// do something in case of error
+				});
+
+			} else {
+				InvoicesDao.save({
+					date: data.date,
+					patient_name: data.patient_name,
+					patient_share: {
+						value: data.patient_share_value
+					},
+					SECU_share: {
+						value: data.SECU_share_value
+					}
+				})
+				.then((statusCode) => {
+					return resolve();
+				}, (err) => {
+					// do something in case of error
+				});
+			}
+		});
 	}
 
 	static save(data) {

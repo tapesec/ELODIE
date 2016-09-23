@@ -1,79 +1,70 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import moment from 'moment';
+
 moment.locale('fr');
-import classNames from 'classnames';
+
+// css..
 require("!style!css!less!./../../css/InvoicesLine.less");
 
-import InvoicesActions from './../actions/InvoicesActions.js';
+const InvoicesLine = ({ toggleSECUPaid, togglePatientPaid, invoice, toggleEdit, deleteLine }) => (
 
+    <tr 
+    	onDoubleClick={() => {
+    		toggleEdit({
+    			_id: invoice._id,
+    			date: invoice.date,
+    			patient_name: invoice.patient_name,
+    			patient_share_value: invoice.patient_share.value,
+    			SECU_share_value: invoice.SECU_share.value
+    		});
+    	}} 
+    	className="pointer">
+		<td className="date-line">{ moment(invoice.date).format('dddd DD MMMM') }</td>
+		<td>{ invoice.patient_name }</td>
+		<td>
+			{ invoice.patient_share.value.toFixed(2) } 
+			<input 
+				className="pull-right" 
+				onChange={(event) => {
+					event.persist();
+					togglePatientPaid(invoice._id, invoice.patient_share.paid);
+				}} 
+				type="checkbox" 
+				checked={ invoice.patient_share.paid }/>
+		</td>
+		<td>
+			{ invoice.SECU_share.value.toFixed(2) }
+			<input 
+				className="pull-right" 
+				onChange={(event) => {
+					event.persist();
+					toggleSECUPaid(invoice._id, invoice.SECU_share.paid);
+				}} 
+				type="checkbox" 
+				checked={ invoice.SECU_share.paid }/>
+		</td>
+		<td>{ invoice.total_line.toFixed(2) } €</td>
+		<td>
+			{ invoice.total_line_paid.toFixed(2) } € 
+			<span 
+				onClick={ () => {
+					deleteLine(invoice.id);
+				}} 
+				className="pull-right glyphicon glyphicon-trash">
+			</span>
+		</td>
+	</tr>
 
-export default class InvoicesLine extends React.Component {
+)
 
+InvoicesLine.propTypes = {
+	toggleSECUPaid: PropTypes.func.isRequired,
+	togglePatientPaid: PropTypes.func.isRequired,
+	toggleEdit: PropTypes.func.isRequired,
+	invoice: PropTypes.object.isRequired,
+	deleteLine: PropTypes.func.isRequired
+}
 
-	render() {
-		var item = this.props.data;
-
-		var lineChecked = classNames({
-      		'striped success': item.patient_share.paid && item.SECU_share.paid
-    	});
-
-		return (    
-
-			<tr onDoubleClick={this._onDoubleClick.bind(this)} className={lineChecked + " pointer"}>
-				<td className="date-line">{ moment(item.date).format('dddd DD MMMM') }</td>
-				<td>{ item.patient_name }</td>
-				<td>
-					{ item.patient_share.value } 
-					<input 
-						className="pull-right" 
-						onChange={this._onTogglePatientPaid.bind(this)} 
-						type="checkbox" 
-						checked={ item.patient_share.paid }/>
-				</td>
-				<td>
-					{ item.SECU_share.value }
-					<input 
-						className="pull-right" 
-						onChange={this._onToggleSECUPaid.bind(this)} 
-						type="checkbox" 
-						checked={ item.SECU_share.paid }/>
-				</td>
-				<td>{ item.total_line } €</td>
-				<td>
-					{ item.total_line_paid } € 
-					<span 
-						onClick={this._onDelete.bind(this)} 
-						className="pull-right glyphicon glyphicon-trash">
-					</span>
-				</td>
-			</tr>
-
-		);
-	}
-
-	_onTogglePatientPaid(e) {
-		InvoicesActions.updatePayment(this.props.data._id, 
-			[{
-				op: "replace", path: "/patient_share/paid", value: !this.props.data.patient_share.paid
-			}]
-		);
-	}
-
-	_onToggleSECUPaid(e) {
-		InvoicesActions.updatePayment(this.props.data._id, 
-			[{
-				op: "replace", path: "/SECU_share/paid", value: !this.props.data.SECU_share.paid
-			}]
-		);
-	}
-
-	_onDelete() {
-		InvoicesActions.removeLine(this.props.data._id);
-	}
-
-	_onDoubleClick(e) {
-		InvoicesActions.toggleEditMode(this.props.data._id, this.props.data);
-	}
-};
+export default InvoicesLine;

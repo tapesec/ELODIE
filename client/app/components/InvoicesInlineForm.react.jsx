@@ -1,188 +1,146 @@
 'use strict';
 
 import React from 'react';
-import InvoicesActions from './../actions/InvoicesActions.js';
-import invoicesStore from './../stores/InvoicesStore.js';
+import { connect } from 'react-redux';
 import moment from 'moment';
+import _ from 'lodash';
+
+import * as actions from '../actions';
+
+import Field from './Input.react.jsx';
 
 require("!style!css!less!./../../css/InvoicesInlineForm.less");
 
-export default class InvoicesInlineForm extends React.Component {
+class InvoicesInlineForm extends React.Component {
 
-
-    constructor() {
-        super();
-        this.state = {
-            date: moment.utc().format('YYYY-MM-DD'),
-            patient_name: "",
-            patient_share: {
-                value: ""
-            },
-            SECU_share: {
-                value: ""
-            },
-            submit_btn_name: "Ajouter",
-            error_message: "",
-            isClean: true
-        };
-    }
+    
 
     componentDidMount() {
-        invoicesStore.addToggleEditModListener(this._populateForm.bind(this));
+        const { dispatch, isValidForm, errorMessage, formContent } = this.props;
+        console.log(this.props, 'PROPS');
     }
 
-    componentWillUnmount() {
-        invoicesStore.removeToggleEditModListener(this._populateForm.bind(this));
-    }
+    render() {
 
-	render() {
+        let inputs = {};
 
-		return (
+        return (
             <div>
                 <div className="col-lg-10 col-lg-offset-1">
-                    <p className="text-danger">{this.state.error_message}</p>
+                    <p className="text-danger">{this.props.errorMessage}</p>
                 </div>
                 <div className="col-lg-10 col-lg-offset-1">
-                    <form onSubmit={this.handleSubmit.bind(this)} className="form-inline invoices-inline-form">
+                    <form 
+                        onSubmit={(event) => {
+                            this.props.onSubmitForm(event, isValidForm);
+                        }} 
+                        className="form-inline invoices-inline-form">
 
-                      <div className="form-group">
-                        <input 
-                            value={moment.utc(this.state.date).format('YYYY-MM-DD')} 
-                            onChange={this._handleDateChange.bind(this)} 
-                            type="Date" 
-                            className="form-control"/>
+                        {/* date*/}
+                        <Field 
+                            name="date" 
+                            type="date" 
+                            value={ this.props.formContent.date? 
+                                moment.utc(this.props.formContent.date).format('YYYY-MM-DD') : moment.utc(new Date()).format('YYYY-MM-DD')
+                            } 
+                            update={this.props.onChangeInput.bind(this)} />
+                        
+                        {/*nom du patient*/}
+                        <Field 
+                            name="patient_name" 
+                            value={ this.props.formContent.patient_name?
+                                this.props.formContent.patient_name : ""
+                            } 
+                            placeholder="Nom du patient" 
+                            update={this.props.onChangeInput.bind(this)} />
 
-                      </div>
-                      
-                      <div className="form-group">
-                        <input 
-                            value={this.state.patient_name} 
-                            onChange={this._handleNameChange.bind(this)} 
-                            type="text" 
-                            className="form-control" 
-                            placeholder="Nom patient" />
-                      </div>
+                        {/*part patient*/}
+                        <Field 
+                            name="patient_share_value" 
+                            type="Number" step="0.01" 
+                            value={ this.props.formContent.patient_share_value? 
+                                this.props.formContent.patient_share_value : ""
+                            } 
+                            placeholder="Part patient" 
+                            update={this.props.onChangeInput.bind(this)} />
 
-                      <div className="form-group">
-                        <input 
-                            value={this.state.patient_share.value} 
-                            onChange={this._handlePatientShareChange.bind(this)} 
-                            type="Number" step="0.01"
-                            className="form-control" 
-                            placeholder="Part patient"/>
-                      </div>
+                        {/*part CPAM*/}
+                        <Field 
+                            name="SECU_share_value" 
+                            type="Number" step="0.01" 
+                            value={ this.props.formContent.SECU_share_value?
+                                this.props.formContent.SECU_share_value : ""
+                            } 
+                            placeholder="Part CPAM" 
+                            update={this.props.onChangeInput.bind(this)} />
 
-                      <div className="form-group">
-                        <input 
-                            value={this.state.SECU_share.value} 
-                            onChange={this._handleSecuShareChange.bind(this)} 
-                            type="Number" step="0.01"
-                            className="form-control" 
-                            placeholder="Part CPAM"/>
-                      </div>
 
-                      <div className="form-group">
-                        <button onClick={this._cleanForm.bind(this)} disabled={this.state.isClean} type="button" className="btn btn-warning"><span className="glyphicon glyphicon-chevron-left"></span> Effacer</button>
-                        <button type="submit" className="pull-right btn btn-primary">{this.state.submit_btn_name}</button>
-                      </div>
-
-                  </form>
-              </div>
-          </div>
-		);
-	}
-
-    _handleDateChange(e) {
-        this.setState({
-            date: e.target.value
-        });
-        this._checkIfClean(this.state);
+                        <div className="form-group">
+                            <button 
+                                onClick={this.props.clean} 
+                                type="button" 
+                                className="btn btn-warning"
+                                disabled={this.props.deleteBtnStatus}>
+                                <span className="glyphicon glyphicon-chevron-left"></span> Effacer
+                            </button>
+                            <button 
+                                type="submit" 
+                                className="pull-right btn btn-primary">
+                                    {this.props.labelBtnSubmit}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        );
     }
+}
 
-    _handleNameChange(e) {
-        this.setState({
-            patient_name: e.target.value
-        });
-        this._checkIfClean(this.state);
-    }
-
-    _handlePatientShareChange(e) {
-        this.setState({
-            patient_share: {
-                value: e.target.value
-            }
-        });
-        this._checkIfClean(this.state);
-    }
-
-    _handleSecuShareChange(e) {
-        this.setState({
-            SECU_share: {
-                value: e.target.value
-            }
-        });
-        this._checkIfClean(this.state);
-    }
-
-
-    handleSubmit(e) {
-        e.preventDefault();
-        if (this._isValidForm(this.state)) {
-            InvoicesActions.addInvoice(this.state);
-            this._cleanForm();
-        } else {
-            this.setState({
-                error_message: "Tu n'as pas bien completé le formulaire bananette !"
-            });
-        }
-    }
-
-    _populateForm(data) {
-        this.setState(data.dataToEdit);
-        this.setState({ submit_btn_name: "Modifier", isClean: false });
-    }
-
-    _isValidForm(data) {
-
-        if (data.patient_name == "" || data.patient_name.length < 2)
-            return false;
-        if (data.patient_share.value == "")
-            return false
-        if (data.SECU_share.value == "")
-            return false;
-
+const getFormContent = (line) => line;
+const setLabelBtnSubmit = (id) => id? "Modifier" : "Ajouter";
+const getDeleteBtnStatus = (line) => _.isEmpty(line)? true : false;
+const getErrorMessage = (line) => line.error_message? line.error_message : "";
+const isValidForm = (line) => {
+    if (line.patient_name != "" && 
+        line.patient_share_value != "" && 
+        line.SECU_share_value != ""
+    ) {
         return true;
+    } else {
+        return false;
     }
+}
 
-    _cleanForm() {
-        delete this.state;
-        this.setState({
-            date: moment.utc().format('YYYY-MM-DD'),
-            patient_name: "",
-            patient_share: {
-                value: ""
-            },
-            SECU_share: {
-                value: ""
-            },
-            submit_btn_name: "Ajouter",
-            error_message: "",
-            isClean: true
-        });
+const mapStateToProps = (state) => {
+    return {
+        formContent: getFormContent(state.formContent),
+        date: new Date().getTime(),
+        labelBtnSubmit: setLabelBtnSubmit(state.lineToEdit),
+        deleteBtnStatus: getDeleteBtnStatus(state.formContent),
+        errorMessage: getErrorMessage(state.formContent),
+        isValidForm: isValidForm(state.formContent)
     }
+}
 
-    _checkIfClean(data) {
-       if (data.patient_name == "" &&
-           data.patient_share == "" &&
-           data.SECU_share == "")
-        {
-            this.setState({
-                isClean: true
-            });
-        } else {
-            this.setState({
-                isClean: false
-            });
+const mapDispatchToProps = (dispatch) => {
+    return {
+        
+        onChangeInput: (name, value) => {
+            dispatch(actions.updateForm(name, value));
+        },
+        clean: () => {
+            dispatch(actions.cleanForm());
+        },
+        onSubmitForm: (event, isValidForm) => {
+            event.preventDefault();
+            if (isValidForm) {
+                dispatch(actions.persistInvoice());
+            } else {
+                dispatch(action.showFormErrorMessage);
+            }
+            return false;
         }
     }
-};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(InvoicesInlineForm);
