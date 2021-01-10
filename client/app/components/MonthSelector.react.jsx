@@ -17,8 +17,9 @@ let MonthSelector = ({ dispatch, date }) => (
     	<div className="col-lg-1 col-lg-offset-3">
     		<span 
     			onClick={() => {
-    				dispatch(actions.changeMonth(moment(date).subtract(1, 'months').valueOf()));
-    				dispatch(actions.fetchInvoicesIfNeeded(date))
+					const newDate = moment(date).subtract(1, 'months').valueOf();
+    				dispatch(actions.changeMonth(newDate));
+    				dispatch(actions.fetchInvoicesIfNeeded(newDate))
     			}}
     			className="h2 glyphicon glyphicon-arrow-left pull-right pointer">
     		</span>
@@ -31,8 +32,9 @@ let MonthSelector = ({ dispatch, date }) => (
     	<div className="col-lg-1">
     		<span 
     			onClick={() => {
-    				dispatch(actions.changeMonth(moment(date).add(1, 'months').valueOf()));
-    				dispatch(actions.fetchInvoicesIfNeeded(date))
+					const newDate = moment(date).add(1, 'months').valueOf();
+    				dispatch(actions.changeMonth(newDate));
+    				dispatch(actions.fetchInvoicesIfNeeded(newDate))
     			}}
     			className="h2 glyphicon glyphicon-arrow-right pointer">
     		</span>
@@ -40,13 +42,9 @@ let MonthSelector = ({ dispatch, date }) => (
 	</div>
 );
 
-function getCurrentMonth(currentMonth) {
-	return currentMonth;
-}
-
 const mapStateToProps = (state) => {
   	return {
-    	date: getCurrentMonth(state.currentMonth),
+    	date: state.currentMonth,
   	}
 }
 

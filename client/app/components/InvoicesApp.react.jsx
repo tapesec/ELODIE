@@ -25,15 +25,7 @@ class Invoices extends React.Component {
 	}
 
 	componentDidMount() {
-    	const { currentMonth, getPdf } = this.props;
     	this.props.fetchInvoicesIfNeeded(this.props.currentMonth);
-  	}
-
-  	componentWillReceiveProps(nextProps) {
-    	if (nextProps.currentMonth !== this.props.currentMonth) {
-      		const { currentMonth, isLoading } = nextProps;
-      		this.props.fetchInvoicesIfNeeded(this.props.currentMonth);
-    	}
   	}
 
 	render () {

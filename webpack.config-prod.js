@@ -45,7 +45,7 @@ var config = {
       		}
     	})
   	],
-  	devtool: "cheap-module-source-map"
+  	//devtool: "eval-source-map"
 };
 
 module.exports = config;
