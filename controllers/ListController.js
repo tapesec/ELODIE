@@ -16,11 +16,9 @@ class ListController {
 	* @description retourne la liste des factures
 	*/
 	static getInvoices(req, res, next) {
-		
 		Invoices
 		.getAll(req.query)
 		.then(function(data) {
-			console.log(req.query.date, 'query date');
 			let dataWithTotalsIndexedByMonth = {};
 			dataWithTotalsIndexedByMonth = {
 				invoices : _.keyBy(data, function(line) {
@@ -29,7 +27,6 @@ class ListController {
 				dateMonth : parseInt(req.query.date, 10),
 				totals: Invoices.getTotalsInvoices(data)
 			};
-			console.log(dataWithTotalsIndexedByMonth, 'data');
 			ListController.sendHttp(res, dataWithTotalsIndexedByMonth);
 		})
 		.catch(function(err) {
@@ -88,7 +85,7 @@ class ListController {
 	}
 
 	static updateInvoice(req, res, next) {
-
+		console.log(req.params.id, req.body)
 		Invoices
 		.setOne(req.params.id, req.body)
 		.then(function() {

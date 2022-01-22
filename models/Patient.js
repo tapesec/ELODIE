@@ -61,7 +61,21 @@ invoiceSchema.statics.getAll = function(param) {
     
     QueryBuilder.exec(function(err, data) {
         if (err) return deferred.reject(err);
-        else deferred.resolve(data);
+        else {
+            const newData = data.map(invoice => {
+                const i = invoice.toObject();
+                const tLine = i.total_line;
+                const tLinePaid = i.total_line_paid;
+                if (tLine !== undefined) {
+                    i.total_line = Math.round(tLine * 1e2) / 1e2
+                }
+                if (tLinePaid !== undefined) {
+                    i.total_line_paid = Math.round(tLinePaid * 1e2) / 1e2
+                }
+                return i;
+            });
+            deferred.resolve(newData);
+        }
     });
 
     return deferred.promise;
@@ -91,10 +105,10 @@ invoiceSchema.statics.getTotalsInvoices = function(invoicesLines) {
     });
 
     return { 
-        total_SECU_share: total_SECU_share.toFixed(2), 
-        total_patient_share: total_patient_share.toFixed(2), 
-        total_global_no_paid: total_global_no_paid.toFixed(2), 
-        total_global_paid: total_global_paid.toFixed(2) 
+        total_SECU_share: Math.round(total_SECU_share * 1e2) / 1e2, 
+        total_patient_share: Math.round(total_patient_share * 1e2) / 1e2, 
+        total_global_no_paid: Math.round(total_global_no_paid * 1e2) / 1e2, 
+        total_global_paid: Math.round(total_global_paid * 1e2) / 1e2 
     };
 }
 
